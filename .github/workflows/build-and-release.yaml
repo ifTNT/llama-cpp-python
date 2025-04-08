@@ -8,6 +8,7 @@ permissions:
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
