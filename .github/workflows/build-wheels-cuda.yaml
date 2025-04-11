@@ -98,6 +98,7 @@ jobs:
         if: (runner.os == 'Linux' || runner.os == 'macOS') && (env.CUDAVER == '12.1.1' || env.CUDAVER == '12.2.2' || env.CUDAVER == '12.3.2')
         run: |
           mamba install -y 'gcc==12.2'
+          mamba install -y 'gxx==12.2'
           gcc --version
 
       - name: Install Dependencies
