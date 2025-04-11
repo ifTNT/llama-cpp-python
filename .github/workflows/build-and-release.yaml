@@ -46,6 +46,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.22.0
         env:
           # disable repair
+          CIBW_ARCHS: auto64
           CIBW_REPAIR_WHEEL_COMMAND: ""
         with:
           package-dir: .
