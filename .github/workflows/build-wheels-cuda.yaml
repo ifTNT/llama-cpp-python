@@ -94,6 +94,12 @@ jobs:
           $cupath = 'CUDA_PATH_V' + $env:CUDAVER.Remove($env:CUDAVER.LastIndexOf('.')).Replace('.','_')
           echo "$cupath=$env:CONDA_PREFIX" >> $env:GITHUB_ENV
 
+      - name: Install GCC 12.2
+        if: (runner.os == 'Linux' || runner.os == 'macOS') && (env.CUDAVER == '12.1.1' || env.CUDAVER == '12.2.2' || env.CUDAVER == '12.3.2')
+        run: |
+          mamba install -y 'gcc==12.2'
+          gcc --version
+
       - name: Install Dependencies
         env:
           MAMBA_DOWNLOAD_FAILFAST: "0"
