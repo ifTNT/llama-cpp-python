@@ -1,6 +1,20 @@
 name: Build Wheels (CUDA)
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      os:
+        description: 'Operating System'
+        required: false
+        default: ubuntu-latest,windows-2019
+      pyver:
+        description: 'Python Versions'
+        required: false
+        default: 3.9,3.10,3.11,3.12
+      cuda:
+        description: 'CUDA Versions'
+        required: false
+        default: 12.1.1,12.2.2,12.3.2,12.4.1
 
 permissions:
   contents: write
@@ -16,19 +30,24 @@ jobs:
         shell: pwsh
 
     steps:
-      - name: Define Job Output
-        id: set-matrix
-        run: |
-          $matrix = @{
-              'os' = @('ubuntu-latest', 'windows-2019')
-              'pyver' = @("3.9", "3.10", "3.11", "3.12")
-              'cuda' = @("12.1.1", "12.2.2", "12.3.2", "12.4.1") #, "12.5.1", "12.6.1")
-              'releasetag' = @("basic")
-          }
+    - name: Define Job Output
+      id: set-matrix
+      run: |
+        $os = "${{ github.event.inputs.os || 'ubuntu-latest,windows-2019' }}".Split(',')
+        $pyver = "${{ github.event.inputs.pyver || '3.9,3.10,3.11,3.12' }}".Split(',')
+        $cuda = "${{ github.event.inputs.cuda || '12.1.1,12.2.2,12.3.2,12.4.1' }}".Split(',')
+        $releasetag = @("basic")
 
-          $matrixOut = ConvertTo-Json $matrix -Compress
-          Write-Output ('matrix=' + $matrixOut) >> $env:GITHUB_OUTPUT
+        $matrix = @{
+          'os' = $os
+          'pyver' = $pyver
+          'cuda' = $cuda
+          'releasetag' = $releasetag
+        }
 
+        $matrixOut = ConvertTo-Json $matrix -Compress
+        Write-Output ('matrix=' + $matrixOut) >> $env:GITHUB_OUTPUT
+        
   build_wheels:
     name: Build Wheel ${{ matrix.os }} ${{ matrix.pyver }} ${{ matrix.cuda }} ${{ matrix.releasetag == 'wheels' && 'AVX2' || matrix.releasetag }}
     needs: define_matrix
